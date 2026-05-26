@@ -59,12 +59,26 @@ print("-"*10 + '|' + "-"*10 + '|' + "-"*10)
 Responde las siguientes preguntas:
 ***************************************************************************************
 1. ¿Qué pasa si se modifica el valor de epsilón de la política epsilon-greedy?
+    Si epsilón aumenta, el agente explora más; si disminuye, explota más lo aprendido.
+
 2. ¿Para que sirve usar una politica epsilon-greedy?
+    La política epsilon-greedy sirve para balancear exploración y explotación durante el aprendizaje.
+
 3. ¿Qué pasa con la política óptima y porqué si p_h es mayor a 0.5?
+    Si p_h > 0.5, la política óptima toma más riesgos porque ganar es más probable.
+
 4. ¿Y si es 0.5?
+    Si p_h = 0.5, las decisiones son más equilibradas porque ganar o perder tienen igual probabilidad.
+
 5. ¿Y si es menor a 0.5?
+    Si p_h < 0.5, la política óptima es más conservadora porque el riesgo de perder aumenta.
+
 6. ¿Qué pasa si se modifica el valor de la tasa de aprendizaje?
+    Si la tasa de aprendizaje aumenta, aprende más rápido pero puede ser inestable; si disminuye, aprende más 
+    lento pero más estable.
+
 7. ¿Qué pasa si se modifica el valor de gama?
+    Si gamma aumenta, el agente valora más recompensas futuras; si disminuye, prioriza recompensas inmediatas.
 
 ***************************************************************************************
 
