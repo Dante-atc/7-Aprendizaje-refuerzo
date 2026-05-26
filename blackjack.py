@@ -21,36 +21,60 @@ class BlackJack(MDPsim):
         return (s+10,True) if 1 in c and s+10<=21 else (s,False)
    
     def estado_inicial(self):
-        self.terminal=False; self.resultado=None
-        self.mano_jugador=[self.reparte_carta(),self.reparte_carta()]
-        self.mano_crupier=[self.reparte_carta(),self.reparte_carta()]
-        self.carta_visible=self.mano_crupier[0]
-        sm,_=self.evalua(self.mano_jugador)
-    
-        while sm<12: self.mano_jugador+=[self.reparte_carta()]; sm,_=self.evalua(self.mano_jugador)
-        self.suma_jugador,self.as_usable=self.evalua(self.mano_jugador)
-        jb=self.suma_jugador==21; cb=self.evalua(self.mano_crupier)[0]==21
-        
-        if jb or cb: self.terminal=True; self.resultado="empate" if jb and cb else "blackjack" if jb else "pierde"
-        
-        return ("T",0,False) if self.terminal else (self.suma_jugador,self.carta_visible,self.as_usable)
+        while True:
+            self.terminal=False; self.resultado=None
+            self.mano_jugador=[self.reparte_carta(),self.reparte_carta()]
+            self.mano_crupier=[self.reparte_carta(),self.reparte_carta()]
+            self.carta_visible=self.mano_crupier[0]
+            sm,_=self.evalua(self.mano_jugador)
+
+            while sm<12: self.mano_jugador+=[self.reparte_carta()]; sm,_=self.evalua(self.mano_jugador)
+            self.suma_jugador,self.as_usable=self.evalua(self.mano_jugador)
+            jb=self.suma_jugador==21; cb=self.evalua(self.mano_crupier)[0]==21
+
+            if jb or cb:
+                self.terminal=True
+                self.resultado="empate" if jb and cb else "blackjack" if jb else "pierde"
+
+            if not self.terminal:
+                return (self.suma_jugador,self.carta_visible,self.as_usable)
     
     def acciones_legales(self,s): return [] if self.es_terminal(s) else [0,1]
     
     def recompensa(self,s,a,s_): return {"blackjack":1.5,"gana":1,"empate":0,"pierde":-1,"bust":-1}.get(self.resultado,0)
     
     
-    def transicion(self,s,a):
+    def sucesor(self,s,a):
         if a==1:
             self.mano_jugador+=[self.reparte_carta()]
             self.suma_jugador,self.as_usable=self.evalua(self.mano_jugador)
-            if self.suma_jugador>21: self.terminal=True; self.resultado="bust"
+
+            if self.suma_jugador>21:
+                self.terminal=True
+                self.resultado="bust"
+
         else:
             self.terminal=True
-            while self.evalua(self.mano_crupier)[0]<17: self.mano_crupier+=[self.reparte_carta()]
+
+            while self.evalclearua(self.mano_crupier)[0]<17:
+                self.mano_crupier+=[self.reparte_carta()]
+
             dc=self.evalua(self.mano_crupier)[0]
-            self.resultado="gana" if dc>21 or self.suma_jugador>dc else "pierde" if self.suma_jugador<dc else "empate"
-        return ("T",0,False) if self.terminal else (self.suma_jugador,self.carta_visible,self.as_usable)
+
+            self.resultado=(
+                "gana" if dc>21 or self.suma_jugador>dc
+                else "pierde" if self.suma_jugador<dc
+                else "empate"
+            )
+
+        return ("T",0,False) if self.terminal else (
+            self.suma_jugador,
+            self.carta_visible,
+            self.as_usable
+        )
+
+    def transicion(self,s,a):
+        return self.sucesor(s,a)
     
     def es_terminal(self,s): return s==("T",0,False)
 
